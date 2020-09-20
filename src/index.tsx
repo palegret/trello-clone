@@ -1,14 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-import './index.css';
+import './index.css'
 
-import App from './App';
-import { AppStateProvider } from './AppStateContext';
+import App from './App'
+import { AppStateProvider } from './AppStateContext'
 
 ReactDOM.render(
-  <AppStateProvider>
-    <App />
-  </AppStateProvider>,
+  <DndProvider backend={HTML5Backend}>
+    <AppStateProvider>
+      <App />
+    </AppStateProvider>
+  </DndProvider>,
   document.getElementById('root')
 )

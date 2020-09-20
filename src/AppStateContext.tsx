@@ -9,10 +9,16 @@ import React, {
 } from 'react'
 
 import AppState from './AppState'
+import { DragItem } from './DragItem'
 import { findItemIndexById } from './utils/findItemIndexById'
+import { moveItem } from './moveItem'
 
 // AKA discriminated union. `type` is the discriminant.
 type Action =
+  | {
+    type: 'SET_DRAGGED_ITEM'
+    payload: DragItem | undefined
+    }
   | {
     type: 'ADD_LIST'
     payload: string
@@ -20,8 +26,15 @@ type Action =
   | {
     type: 'ADD_TASK'
     payload: { 
-      text: string; 
+      text: string
       listId: string 
+    }
+  }
+  | {
+    type: 'MOVE_LIST'
+    payload: {
+      dragIndex: number
+      hoverIndex: number
     }
   }
 
@@ -52,13 +65,27 @@ const appStateReducer = (state: AppState, action: Action): AppState => {
         ...state 
       }
     }
+    case 'MOVE_LIST': {
+      const { dragIndex, hoverIndex } = action.payload
+      state.lists = moveItem(state.lists, dragIndex, hoverIndex)
+
+      return { 
+        ...state 
+      }
+    }    
+    case 'SET_DRAGGED_ITEM': {
+      return { 
+        ...state, 
+        draggedItem: action.payload 
+      }
+    }    
     default: {
       return state
     }
   }
 }
 
-const appData: AppState = {
+const appState: AppState = {
   lists: [
     {
       id: '0',
@@ -75,7 +102,8 @@ const appData: AppState = {
       text: 'Done',
       tasks: [{ id: 'c3', text: 'Begin to use static typing' }]
     }
-  ]
+  ],
+  draggedItem: undefined
 }
 
 interface AppStateContextProps {
@@ -86,7 +114,7 @@ interface AppStateContextProps {
 const AppStateContext = createContext<AppStateContextProps>({} as AppStateContextProps)
 
 export const AppStateProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [state, dispatch] = useReducer(appStateReducer, appData)
+  const [state, dispatch] = useReducer(appStateReducer, appState)
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>
