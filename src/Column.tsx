@@ -1,13 +1,15 @@
-import React, { useRef } from 'react'
-import { useDrop } from 'react-dnd'
+import React, { useRef } from "react";
+import { useDrop } from "react-dnd";
 
-import { AddNewItem } from './AddNewItem'
-import { Card } from './Card'
-import { ColumnContainer, ColumnTitle } from './styles'
-import { DragItem } from './DragItem'
-import { isHidden } from './utils/isHidden'
-import { useAppState } from './AppStateContext'
-import { useItemDrag } from './useItemDrag'
+import { AddNewItem } from "./AddNewItem";
+import { Card } from "./Card";
+
+import { ColumnContainer, ColumnTitle } from "./styles";
+
+import { DragItem } from "./DragItem";
+import { isHidden } from "./utils/isHidden";
+import { useAppState } from "./AppStateContext";
+import { useItemDrag } from "./useItemDrag";
 
 interface ColumnProps {
   text: string
@@ -17,53 +19,61 @@ interface ColumnProps {
 }
 
 export const Column = ({ text, index, id, isPreview }: ColumnProps) => {
-  const { state, dispatch } = useAppState()
-  const ref = useRef<HTMLDivElement>(null)
-  const tasks = state.lists[index].tasks
+  const { state, dispatch } = useAppState();
+  const ref = useRef<HTMLDivElement>(null);
+  const tasks = state.lists[index].tasks;
 
   const { drag } = useItemDrag({ 
-    type: 'COLUMN', 
+    type: "COLUMN", 
     id, 
     index, 
     text 
-  })
+  });
 
   const [, drop] = useDrop({
-    accept: 'COLUMN',
+    accept: "COLUMN",
     hover(item: DragItem) {
-      const dragIndex = item.index
-      const hoverIndex = index
+      const dragIndex = item.index;
+      const hoverIndex = index;
   
       if (dragIndex === hoverIndex)
-        return
+        return;
   
       dispatch({
-        type: 'MOVE_LIST', 
+        type: "MOVE_LIST", 
         payload: { 
           dragIndex, hoverIndex 
         } 
-      })
+      });
   
-      item.index = hoverIndex
+      item.index = hoverIndex;
     }
-  })
+  });
   
-  drag(drop(ref))
+  drag(drop(ref));
 
   return (
     <ColumnContainer 
       ref={ref} 
       isPreview={isPreview} 
-      isHidden={isHidden(isPreview, state.draggedItem, 'COLUMN', id)}
+      isHidden={isHidden(isPreview, state.draggedItem, "COLUMN", id)}
     >
       <ColumnTitle>{text}</ColumnTitle>
 
-      {tasks.map((task, i) => <Card text={task.text} key={task.id} index={i} />)}
-      
+      {tasks.map((task, i) => (
+        <Card
+          columnId={id}
+          id={task.id}
+          index={i}
+          key={task.id}
+          text={task.text}
+        />
+      ))}
+
       <AddNewItem
-        toggleButtonText='+ Add another task'
+        toggleButtonText="+ Add another task"
         onAdd={text => dispatch({ 
-          type: 'ADD_TASK', 
+          type: "ADD_TASK", 
           payload: { 
             text, 
             listId: id 
@@ -72,5 +82,5 @@ export const Column = ({ text, index, id, isPreview }: ColumnProps) => {
         dark
       />
     </ColumnContainer>
-  )
-}
+  );
+};

@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { useFocus } from './utils/useFocus';
-import { NewItemFormContainer, NewItemButton, NewItemInput } from './styles';
+import { useFocus } from "./utils/useFocus";
+import {
+  NewItemButton,
+  NewItemFormContainer,
+  NewItemInput
+} from "./styles";
 
 interface NewItemFormProps {
   onAdd(text: string): void
 }
 
 export const NewItemForm = ({ onAdd }: NewItemFormProps) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const inputRef = useFocus();
 
   return (
@@ -22,5 +26,6 @@ export const NewItemForm = ({ onAdd }: NewItemFormProps) => {
         Create
       </NewItemButton>
     </NewItemFormContainer>
-  )
-}
+  );
+};
+
