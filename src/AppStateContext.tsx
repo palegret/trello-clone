@@ -4,6 +4,7 @@ import React, {
   createContext,
   Dispatch,
   useContext,
+  useEffect,
   useReducer,
   PropsWithChildren
 } from "react";
@@ -12,6 +13,8 @@ import AppState from "./AppState";
 import { DragItem } from "./DragItem";
 import { findItemIndexById } from "./utils/findItemIndexById";
 import { moveItem } from "./moveItem";
+import { save } from "./api"
+import { withData } from "./withData";
 
 // AKA discriminated union. `type` is the discriminant.
 type Action =
@@ -111,6 +114,7 @@ const appStateReducer = (state: AppState, action: Action): AppState => {
   }
 };
 
+/*
 const appState: AppState = {
   lists: [
     {
@@ -131,6 +135,7 @@ const appState: AppState = {
   ],
   draggedItem: undefined
 };
+*/
 
 interface AppStateContextProps {
   state: AppState
@@ -139,16 +144,20 @@ interface AppStateContextProps {
 
 const AppStateContext = createContext<AppStateContextProps>({} as AppStateContextProps);
 
-export const AppStateProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [state, dispatch] = useReducer(appStateReducer, appState);
+export const AppStateProvider = withData(({ children, initialState }: PropsWithChildren<{ initialState: AppState }>) => {
+  const [state, dispatch] = useReducer(appStateReducer, initialState);
+
+  useEffect(() => {
+    save(state)
+  }, [state]);
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>
       {children}
     </AppStateContext.Provider>
   );
-};
+});
 
 export const useAppState = () => {
-  return useContext(AppStateContext)
+  return useContext(AppStateContext);
 };
